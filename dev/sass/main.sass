@@ -1,0 +1,36 @@
+@import "../../../../core/mixins/reset"
+@import "../../../../core/mixins/mixins"
+@import "vars"
+$font_body: 14px
++font_inc($f_reg,'roboto-regular.ttf')
+.set
+	+wh(100%)
+html,body
+	min-height: 100vh
+	overflow-x: hidden
+body
+	+wh(100%)
+	+font($font_body,$f_reg,$black)
+
+input,button
+	font-family: inherit
+	font-size: inherit
+
+input
+	background-color: transparent
+	border: none
+
+$unit: 'px'
+
++mq($mobile#{$unit})
+	@import "media/m"
++mq($mobile-large#{$unit})
+	@import "media/ml"
++mq($tablet#{$unit})
+	@import "media/t"
++mq($tablet-large#{$unit})
+	@import "media/tl"
++mq($desktop#{$unit})
+	@import "media/d"
++mq($desktop-large#{$unit})
+	@import "media/dl"

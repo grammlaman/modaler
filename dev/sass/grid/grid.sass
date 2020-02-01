@@ -1,0 +1,75 @@
+$unit: 'px'
+//
+     Сетка 2.0
+      m - мобильные колонки
+      ml  - мобильные в развороте
+      t   - планшетные
+      tl  - планшетные в развороте
+      d  -  десктопные колонки
+.pallet
+	font-weight: 700
+	text-align: center
+	&:before
+		//+af("П")
+.bricks
+	+w(100%)
+	display: flex
+	justify-content: flex-start
+	flex-wrap: wrap
+// Отступы
+.alic
+	align-items: center
+.dfc
+	+dfc
+.dfi
+	justify-content: space-between
+
+.mr
+	margin-right: auto
+.ml
+	margin-left: auto
+$cols: 12
+$one_col: 100 / $cols
+$units: '%'
+$cnt: 1
+//$mobile: 320
+//$mobile-large: 480
+//$tablet: 768
+//$tablet-large: 1024
+
+// m- t  tl  d
+
+// 300 / 12  == 100
+// 1200 / 12  == 100
+
+
+=grid($col_cnt,$letter,$full:null)
+	@for $i from 1 through $col_cnt
+		@if($full)
+			$one_full_col: ( 100% / ($desktop / 100) )
+			$one_col: $one_full_col - ($one_full_col * 0.3) // 70px
+			$one_dep: $one_full_col - ($one_full_col * 0.7) // 30px
+			#{$letter}#{$i}
+				width:  ($one_full_col * $i)
+			//#{$letter}d#{$i}
+			//	width: (($one_full_col) * $i) + $one_dep
+			#{$letter}wd#{$i}
+				width: (($one_full_col) * $i) - $one_dep
+			#{$letter}wi#{$i}
+				width: (($one_full_col) * $i) - $one_col
+		@else
+			$one_full_col: (100% / $col_cnt)
+			#{$letter}#{$i}
+				width:  ($one_full_col * $i)
+
+
+@media screen and (min-width: $mobile#{$unit})
+	+grid($cols,'.m')
+@media screen and (min-width: $mobile-large#{$unit})
+	+grid($cols,'.ml')
+@media screen and (min-width: $tablet#{$unit})
+	+grid($cols,'.t')
+@media screen and (min-width: $tablet-large#{$unit})
+	+grid($cols,'.tl')
+@media screen and (min-width: $desktop#{$unit})
+	+grid($cols,'.d','true')
