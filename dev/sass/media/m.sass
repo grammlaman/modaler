@@ -2,16 +2,19 @@ $unit: 'px'
 .section
   +w($mobile#{$unit})
 .form
-  box-shadow: 0 0 10px rgba(0,0,0,0.3)
-  padding: 50px
-  position: relative
-  &-cont,&-corner
-    +w(300px)
-    margin: auto
+  &-cont
+    +wh(100%)
     position: fixed
-    right: 0
+    top: 0
     left: 0
-    top: 100px
+    z-index: 100
+    background-color: rgba(0,0,0,0.5)
+    &-mini
+      +w(300px)
+      margin: 100px auto
+      padding: 50px
+      background-color: #fff
+      position: relative
   &-input
     +w(100%)
     border-bottom: 1px solid #000
@@ -31,7 +34,6 @@ $unit: 'px'
   justify-content: center
   align-items: center
   background-color: #fff
-  border: 1px solid #000
   border-radius: 100%
   box-shadow: 0 0 5px rgba(0,0,0,0.3)
   position: absolute
