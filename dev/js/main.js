@@ -84,6 +84,7 @@ class Modaler {
                     coordinates : {}
                 });
             }
+            if(target == document.querySelector('core-modaler-inner')) break;
             target = target.parentElement;
         }
     }
