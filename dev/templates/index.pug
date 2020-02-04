@@ -4,15 +4,11 @@ append vars
     page_title= 'Главная'
 block content
     core-body
-        //.form-cont
-        //    .form-cont-mini
-        //        form
-        //            button(type='button').close
-        //                span
-        //                span
-        //            input(type='text' placeholder='Ваше имя').form-input.name
-        //            input(type='tel' placeholder='Телефон').form-input.phone
-        //            input(type='email' placeholder='E-mail').form-input.mail
-        //            input(type='password' placeholder='Пароль').form-input.pass
-        //            button(type='button').submit Подтвердить
-        button.button Посередине
+        form.form
+            input(type='text' placeholder='Ваше имя').form-input.name
+            input(type='tel' placeholder='Телефон').form-input.phone
+            input(type='email' placeholder='E-mail').form-input.mail
+            input(type='password' placeholder='Пароль').form-input.pass
+            button(type='button').submit Подтвердить
+        button.button(data-click-action='showModal') Показать модальное окно
+        button.button2(data-click-action='showModal2') Показать модальное окно 2
