@@ -85,8 +85,8 @@ class Modaler {
             <button class="submit" type="button">Подтвердить</button>
           </form>`,
                     contentType : 'layout',
+                    closeBtn : '.close',
                     animType : 1,
-                    closeBtn : '.close-button',
                     coordinates : {}
                 });
             }
@@ -122,13 +122,11 @@ class Modaler {
                 _.modalerCloseBtn.innerHTML = modalerData.closeBtn;
             } else {
                 let clone = document.querySelector(modalerData.closeBtn).cloneNode(true);
-                clone.style.display = 'block';
                 _.modalerCloseBtn.append(clone);
                 _.modalerCloseBtnClone = clone;
             }
         } else if (typeof modalerData.closeBtn == "object"){
             let clone = modalerData.closeBtn.cloneNode(true);
-            clone.style.display = 'block';
             _.modalerCloseBtn.append(clone);
         }
         else return;
@@ -181,8 +179,19 @@ class Modaler {
         if(modalerData.closeBtn !== false) {
             let btnWidth = 25,
                 btnHeight = 25;
-            let btnX = _.innerCont.getBoundingClientRect().x + _.innerCont.getBoundingClientRect().width - (btnWidth / 2),
+            if(modalerData.closeBtn !== "boolean"){
+                btnWidth = _.modalerCloseBtnClone.offsetWidth;
+                btnHeight = _.modalerCloseBtnClone.offsetHeight;
+            }
+            let btnX = _.innerCont.getBoundingClientRect().x + _.innerCont.offsetWidth - (btnWidth / 2),
                 btnY = _.innerCont.getBoundingClientRect().y - (btnHeight / 2);
+            if(_.innerCont.offsetWidth + 20 === maxWidth) {
+                if ((modalerData.closeBtn === true) || (modalerData.closeBtn === undefined)) {
+                    btnX = maxWidth - btnWidth;
+                } else {
+                    btnX = maxWidth - _.modalerCloseBtnClone.offsetWidth;
+                }
+            }
             let closeCont = `core-modaler-close {
                     width:${btnWidth}px;
                     height:${btnHeight}px;
@@ -209,7 +218,7 @@ class Modaler {
                     transform: rotate(-45deg)
                 }`;
             _.closeStyle.textContent = closeCont;
-            if(modalerData.closeBtn === true){
+            if((modalerData.closeBtn === true) || (modalerData.closeBtn === undefined)){
                 _.closeStyle.textContent = closeCont + closeContSpan;
             }
         }
