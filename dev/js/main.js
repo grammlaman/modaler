@@ -78,15 +78,15 @@ class Modaler {
             if(target.getAttribute('data-click-action')){
                 mainEventBus.trigger(modaler,target.getAttribute('data-click-action'),{
                     content : `<form class="form">
-                               <input class="form-input name" type="text" placeholder="Ваше имя">
-                               <input class="form-input phone" type="tel" placeholder="Телефон">
-                               <input class="form-input mail" type="email" placeholder="E-mail">
-                               <input class="form-input pass" type="password" placeholder="Пароль">
-                               <button class="submit" type="button">Подтвердить</button>
-                               </form>`,
+            <input class="form-input name" type="text" placeholder="Ваше имя">
+            <input class="form-input phone" type="tel" placeholder="Телефон">
+            <input class="form-input mail" type="email" placeholder="E-mail">
+            <input class="form-input pass" type="password" placeholder="Пароль">
+            <button class="submit" type="button">Подтвердить</button>
+          </form>`,
                     contentType : 'layout',
                     animType : 1,
-                    closeBtn : true,
+                    closeBtn : '.close-button',
                     coordinates : {}
                 });
             }
@@ -111,12 +111,12 @@ class Modaler {
         const _ = this;
         _.modalerCloseBtn = document.createElement('CORE-MODALER-CLOSE');
         _.modalerCloseBtn.setAttribute('data-click-action','closeModal');
+        _.closeStyle = document.createElement('STYLE');
+        _.cont.append(_.closeStyle);
         if((modalerData.closeBtn === undefined) || (modalerData.closeBtn === true)) {
             _.span = document.createElement('SPAN');
             _.span2 = document.createElement('SPAN');
-            _.closeStyle = document.createElement('STYLE');
             _.modalerCloseBtn.append(_.span, _.span2);
-            _.innerCont.append(_.closeStyle);
         } else if (typeof modalerData.closeBtn === "string"){
             if(modalerData.closeBtn[0] !== '.'){
                 _.modalerCloseBtn.innerHTML = modalerData.closeBtn;
@@ -124,24 +124,30 @@ class Modaler {
                 let clone = document.querySelector(modalerData.closeBtn).cloneNode(true);
                 clone.style.display = 'block';
                 _.modalerCloseBtn.append(clone);
+                _.modalerCloseBtnClone = clone;
             }
         } else if (typeof modalerData.closeBtn == "object"){
             let clone = modalerData.closeBtn.cloneNode(true);
             clone.style.display = 'block';
             _.modalerCloseBtn.append(clone);
+            _.modalerCloseBtnClone = clone;
         }
         else return;
-        _.innerCont.append(_.modalerCloseBtn);
+        _.cont.append(_.modalerCloseBtn);
+        _.modalerCloseBtnParams = _.modalerCloseBtn.getBoundingClientRect();
     }
     //Присваивает стили
     async modalerStyles(modalerData){
         const _ = this;
-        let innerWidth = '300',
+        let
+            maxWidth = screen.availWidth,
+            innerWidth = '300',
             popup = `
                 min-height:100px;
                 display:flex;
                 justify-content:center;
-                align-items:center`;
+                align-items:center;
+                padding:30px`;
         if(modalerData.contentType === 'layout'){
             innerWidth = _.innerCont.childNodes[0].getBoundingClientRect().width ;
             popup = '';
@@ -162,8 +168,9 @@ class Modaler {
                 left:0;
             }
             core-modaler-inner {
+                max-width:${maxWidth - 20}px;
                 width:${innerWidth}px;
-                position:relative;
+                overflow:auto;
                 display: block;
                 background-color:#fff;
                 margin-top:${top};
@@ -172,11 +179,20 @@ class Modaler {
                 ${popup};
             }
         `;
-        if((modalerData.closeBtn === true) || (modalerData.closeBtn === undefined)) {
-            _.closeStyle.textContent = `
-                core-modaler-close {
-                    width:25px;
-                    height:25px;
+        if(modalerData.closeBtn !== false) {
+            let btnWidth = 25,
+                btnHeight = 25;
+            let btnX = _.innerCont.getBoundingClientRect().x + _.innerCont.getBoundingClientRect().width - (btnWidth / 2),
+                btnY = _.innerCont.getBoundingClientRect().y - (btnHeight / 2);
+            if(modalerData.closeBtn !== true){
+                btnWidth = _.modalerCloseBtn.offsetWidth;
+            }
+            if((_.innerCont.getBoundingClientRect().x + _.innerCont.getBoundingClientRect().width + btnWidth) > maxWidth){
+                btnX = maxWidth - btnWidth;
+            }
+            let closeCont = `core-modaler-close {
+                    width:${btnWidth}px;
+                    height:${btnHeight}px;
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -185,10 +201,10 @@ class Modaler {
                     box-shadow: 0 0 5px rgba(0,0,0,0.3);
                     cursor: pointer;
                     position: absolute; 
-                    top: -10px; 
-                    right: -10px;
-                }
-                core-modaler-close span {
+                    top: ${btnY}px; 
+                    left: ${btnX}px;
+                }`,
+                closeContSpan = `core-modaler-close span {
                     width:1px;
                     height:15px;
                     display: block;
@@ -198,8 +214,11 @@ class Modaler {
                 }
                 core-modaler-close span:last-child {
                     transform: rotate(-45deg)
-                }
-            `;
+                }`;
+            _.closeStyle.textContent = closeCont;
+            if(modalerData.closeBtn === true){
+                _.closeStyle.textContent = closeCont + closeContSpan;
+            }
         }
     }
     //Запускает анимацию открытия модального окна на основе принятых данных
