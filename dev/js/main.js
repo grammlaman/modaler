@@ -1,82 +1,19 @@
+import {MainEventBus} from './MainEventBus.lib.js';
 
-class _MainEventBus {
-    constructor(flag){
-        const _ = this;
-        _.flag =  flag;
-        _.components = {};
-    }
-    clear(){
-        const _ = this;
-        for(let prop in _.events) {
-            if (prop === 'includeModule' || prop === 'showMenu') continue;
-            delete _.events[prop];
-        }
-    }
-    add(componentName,eventName,fn,prop){
-        const _ = this;
-        if(!prop){
-            prop= fn.name;
-        }
-        if(!_.components[componentName]){
-            _.components[componentName] = {};
-            _.components[componentName]['events'] = {};
-        }
-        if(!_.components[componentName]['events'][eventName]){
-            _.components[componentName]['events'][eventName] = new Map();
-        }
 
-        _.components[componentName]['events'] = _.components[componentName]['events'] || new Map();
-        if(!_.components[componentName]['events'][eventName].has(prop)) {
-            _.components[componentName]['events'][eventName].set(prop, fn);
-            return;
-        }
-        //_.events[eventName].delete(fn.name);
-        if(_.flag === 'dev'){
-            console.warn(`Подписка на событие ${eventName} на ф-ю: ${fn.name}`);
-        }
-    }
-    trigger(componentName,eventName,data){
-        const _ = this;
-        //console.log('Event:',componentName,eventName)
-        if(eventName == 'loadPage'){
-            //console.log(componentName)
-        }
-        if(_.flag === 'dev'){
-            console.warn(`Компонент ${componentName}: Запуск события ${eventName} с данными: "${data}" `);
-        }
-        ///	console.table(_.components);
-        try{
-            if (_.components[componentName]['events'][eventName]) {
-                _.components[componentName]['events'][eventName].forEach(function(fn) {
-                    fn(data);
-                });
-            }
-        } catch (e) {
-            if(e.name == 'TypeError'){
-                let errObj = {};
-                errObj['err'] = e;
-                errObj['component'] = componentName;
-                errObj['event'] = eventName;
-                console.log('%c%s',`background-color:#3f51b5;`,`!Обращение к событию, которое не определено ${errObj}`);
-            }
-        }
-    }
-    remove(componentName,eventName,prop){
-        const _ = this;
-        if (_.components[componentName].events[eventName]) {
-            //console.log(_.components[componentName].events[eventName])
-            _.components[componentName].events[eventName].delete(prop);
-        }
-    }
-}
 class Modaler {
-    constructor(){}
+    constructor(){
+        const _ = this;
+        MainEventBus.add('Modaler','showModal', _.show.bind(this));
+        MainEventBus.add('Modaler','closeModal', _.close.bind(this));
+    }
     clickHandler(e){
         const _ = this;
         let target = e.target;
         while(target !== document.querySelector('body')){
+            target.getAttribute('data-click-action');
             if(target.getAttribute('data-click-action')){
-                mainEventBus.trigger(modaler,target.getAttribute('data-click-action'),{
+                MainEventBus.trigger('modaler',target.getAttribute('data-click-action') + ' ',{
                     content : `<form class="form">
             <input class="form-input name" type="text" placeholder="Ваше имя">
             <input class="form-input phone" type="tel" placeholder="Телефон">
@@ -301,13 +238,8 @@ class Modaler {
         }
     }
 }
-let mainEventBus = new _MainEventBus(),
-    modaler = new Modaler();
+let modaler = new Modaler();
 
 
-mainEventBus.add(modaler,'showModal', modaler.show.bind(modaler));
-mainEventBus.add(modaler,'closeModal', modaler.close.bind(modaler));
-
-
-document.addEventListener('click',modaler.clickHandler.bind(modaler));
+document.addEventListener('click',modaler.clickHandler);
 

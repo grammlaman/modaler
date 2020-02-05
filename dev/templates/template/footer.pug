@@ -8,4 +8,5 @@ footer
         +inc('js','slick.js')
     - if(greensock)
         +inc('js','js/greensock.js')
-    +inc('js','js/main.js',true)
+    +inc('js','js/main.js',true)(type='module')
+    +inc('js','js/MainEventBus.lib.js')(type='module')
