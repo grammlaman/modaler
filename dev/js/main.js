@@ -95,7 +95,7 @@ class Modaler {
         }
     }
     //Создает контейнер для модального окна
-    async createContTpl(){
+    createContTpl(){
         const _ = this;
         _.body = document.querySelector('core-body');
         _.cont = document.createElement('CORE-MODALER');
@@ -107,7 +107,7 @@ class Modaler {
         _.body.append(_.cont);
     }
     //Создает кнопку закрытия модального окна
-    async createButtonTpl(modalerData){
+    createButtonTpl(modalerData){
         const _ = this;
         _.modalerCloseBtn = document.createElement('CORE-MODALER-CLOSE');
         _.modalerCloseBtn.setAttribute('data-click-action','closeModal');
@@ -130,14 +130,13 @@ class Modaler {
             let clone = modalerData.closeBtn.cloneNode(true);
             clone.style.display = 'block';
             _.modalerCloseBtn.append(clone);
-            _.modalerCloseBtnClone = clone;
         }
         else return;
         _.cont.append(_.modalerCloseBtn);
         _.modalerCloseBtnParams = _.modalerCloseBtn.getBoundingClientRect();
     }
     //Присваивает стили
-    async modalerStyles(modalerData){
+    modalerStyles(modalerData){
         const _ = this;
         let
             maxWidth = screen.availWidth,
@@ -184,12 +183,6 @@ class Modaler {
                 btnHeight = 25;
             let btnX = _.innerCont.getBoundingClientRect().x + _.innerCont.getBoundingClientRect().width - (btnWidth / 2),
                 btnY = _.innerCont.getBoundingClientRect().y - (btnHeight / 2);
-            if(modalerData.closeBtn !== true){
-                btnWidth = _.modalerCloseBtn.offsetWidth;
-            }
-            if((_.innerCont.getBoundingClientRect().x + _.innerCont.getBoundingClientRect().width + btnWidth) > maxWidth){
-                btnX = maxWidth - btnWidth;
-            }
             let closeCont = `core-modaler-close {
                     width:${btnWidth}px;
                     height:${btnHeight}px;
@@ -222,7 +215,7 @@ class Modaler {
         }
     }
     //Запускает анимацию открытия модального окна на основе принятых данных
-    async modalAnimationStart(modalerData){
+    modalAnimationStart(modalerData){
         const _ = this;
         _.animType = modalerData.animType;
         if(!modalerData.animType){_.animType = 1}
@@ -237,7 +230,7 @@ class Modaler {
         TweenMax.fromTo(_.cont,.35,{opacity:0},{opacity: 1});
     }
     //Запускает анимацию закрытия модального окна на основе принятых данных
-    async modalAnimationEnd(){
+    modalAnimationEnd(){
         const _ = this;
         if(_.animType === 1){
             _.tweenFromEnd = {scale:1.3};
@@ -251,7 +244,7 @@ class Modaler {
         TweenMax.fromTo(_.cont,.5,{opacity:1},{opacity: 0})
     }
     //Принимает параметры для вывода частей модульного окна
-    async showModal(modalerData){
+    showModal(modalerData){
         const _ = this;
         if(!modalerData.content){
             console.log('modalerData.content пустой');
@@ -275,7 +268,7 @@ class Modaler {
         }
     }
     //Закрывает модальное окно и применяет анимацию закрытия
-    async closeModal(){
+    closeModal(){
         const _ = this;
         setTimeout(function () { _.cont.remove(), _.contStyle.remove() },500)
     }
