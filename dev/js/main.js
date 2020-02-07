@@ -13,7 +13,7 @@ class Modaler {
         while(target !== document.querySelector('body')){
             target.getAttribute('data-click-action');
             if(target.getAttribute('data-click-action')){
-                MainEventBus.trigger('modaler',target.getAttribute('data-click-action') + ' ',{
+                MainEventBus.trigger('Modaler',target.getAttribute('data-click-action'),{
                     content : `<form class="form">
             <input class="form-input name" type="text" placeholder="Ваше имя">
             <input class="form-input phone" type="tel" placeholder="Телефон">
@@ -74,16 +74,17 @@ class Modaler {
     modalerStyles(modalerData){
         const _ = this;
         let
-            maxWidth = screen.availWidth,
             innerWidth = '300',
             popup = `
                 min-height:100px;
                 display:flex;
                 justify-content:center;
                 align-items:center;
-                padding:30px`;
+                padding:30px
+            `;
         if(modalerData.contentType === 'layout'){
-            innerWidth = _.innerCont.childNodes[0].getBoundingClientRect().width ;
+            innerWidth = _.innerCont.childNodes[0].offsetWidth ;
+            if(innerWidth > (screen.availWidth - 20)) innerWidth = (screen.availWidth - 20);
             popup = '';
         }
         let top = modalerData.coordinates.top || '100px',
@@ -102,7 +103,6 @@ class Modaler {
                 left:0;
             }
             core-modaler-inner {
-                max-width:${maxWidth - 20}px;
                 width:${innerWidth}px;
                 overflow:auto;
                 display: block;
@@ -120,14 +120,10 @@ class Modaler {
                 btnWidth = _.modalerCloseBtnClone.offsetWidth;
                 btnHeight = _.modalerCloseBtnClone.offsetHeight;
             }
-            let btnX = _.innerCont.getBoundingClientRect().x + _.innerCont.offsetWidth - (btnWidth / 2),
+            let btnX = _.innerCont.getBoundingClientRect().x + innerWidth - (btnWidth / 2),
                 btnY = _.innerCont.getBoundingClientRect().y - (btnHeight / 2);
-            if(_.innerCont.offsetWidth + 20 === maxWidth) {
-                if ((modalerData.closeBtn === true) || (modalerData.closeBtn === undefined)) {
-                    btnX = maxWidth - btnWidth;
-                } else {
-                    btnX = maxWidth - _.modalerCloseBtnClone.offsetWidth;
-                }
+            if(innerWidth === (screen.availWidth - 20)){
+                btnX = screen.availWidth - btnWidth;
             }
             let closeCont = `core-modaler-close {
                     width:${btnWidth}px;
