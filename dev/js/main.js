@@ -14,17 +14,10 @@ class Modaler {
             target.getAttribute('data-click-action');
             if(target.getAttribute('data-click-action')){
                 MainEventBus.trigger('Modaler',target.getAttribute('data-click-action'),{
-                    content : `<form class="form">
-            <input class="form-input name" type="text" placeholder="Ваше имя">
-            <input class="form-input phone" type="tel" placeholder="Телефон">
-            <input class="form-input mail" type="email" placeholder="E-mail">
-            <input class="form-input pass" type="password" placeholder="Пароль">
-            <button class="submit" type="button">Подтвердить</button>
-          </form>`,
+                    content : '<form class="form">',
+                    closeBtn : false,
                     contentType : 'layout',
-                    closeBtn : '.close',
-                    animType : 1,
-                    coordinates : {}
+                    coordinates : {top : '500px'}
                 });
             }
             if(target === document.querySelector('core-modaler-inner')) break;
@@ -87,9 +80,12 @@ class Modaler {
             if(innerWidth > (screen.availWidth - 20)) innerWidth = (screen.availWidth - 20);
             popup = '';
         }
-        let top = modalerData.coordinates.top || '100px',
-            right = modalerData.coordinates.right || 'auto',
-            left = modalerData.coordinates.left || 'auto';
+        let top = '100px',
+            right = 'auto',
+            left = 'auto';
+        if((modalerData.coordinates) && (modalerData.coordinates.top)) top = modalerData.coordinates.top;
+        if((modalerData.coordinates) && (modalerData.coordinates.right)) right = modalerData.coordinates.right;
+        if((modalerData.coordinates) && (modalerData.coordinates.left)) left = modalerData.coordinates.left;
         _.contStyle.textContent = `
             core-modaler {
                 width:100%;
@@ -116,12 +112,13 @@ class Modaler {
         if(modalerData.closeBtn !== false) {
             let btnWidth = 25,
                 btnHeight = 25;
-            if(modalerData.closeBtn !== "boolean"){
+            if(typeof modalerData.closeBtn == "string"){
                 btnWidth = _.modalerCloseBtnClone.offsetWidth;
                 btnHeight = _.modalerCloseBtnClone.offsetHeight;
             }
-            let btnX = _.innerCont.getBoundingClientRect().x + innerWidth - (btnWidth / 2),
+            let btnX = _.innerCont.getBoundingClientRect().x + parseInt(innerWidth) - (btnWidth / 2),
                 btnY = _.innerCont.getBoundingClientRect().y - (btnHeight / 2);
+            console.log(_.innerCont.getBoundingClientRect(),innerWidth,btnWidth );
             if(innerWidth === (screen.availWidth - 20)){
                 btnX = screen.availWidth - btnWidth;
             }
@@ -189,7 +186,7 @@ class Modaler {
     showModal(modalerData){
         const _ = this;
         if(!modalerData.content){
-            console.log('modalerData.content пустой');
+            _.innerCont.textContent = modalerData;
             return;
         }
         if((modalerData.contentType === 'string') || (modalerData.contentType === undefined)){
