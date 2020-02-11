@@ -118,7 +118,6 @@ class Modaler {
             }
             let btnX = _.innerCont.getBoundingClientRect().x + parseInt(innerWidth) - (btnWidth / 2),
                 btnY = _.innerCont.getBoundingClientRect().y - (btnHeight / 2);
-            console.log(_.innerCont.getBoundingClientRect(),innerWidth,btnWidth );
             if(innerWidth === (screen.availWidth - 20)){
                 btnX = screen.availWidth - btnWidth;
             }

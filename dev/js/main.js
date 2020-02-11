@@ -14,10 +14,8 @@ class Modaler {
             target.getAttribute('data-click-action');
             if(target.getAttribute('data-click-action')){
                 MainEventBus.trigger('Modaler',target.getAttribute('data-click-action'),{
-                    content : '<form class="form">',
-                    closeBtn : false,
-                    contentType : 'layout',
-                    coordinates : {top : '500px'}
+                    content : document.querySelector('.form'),
+                    contentType : 'object'
                 });
             }
             if(target === document.querySelector('core-modaler-inner')) break;
@@ -67,25 +65,29 @@ class Modaler {
     modalerStyles(modalerData){
         const _ = this;
         let
-            innerWidth = '300',
+            innerWidth = '',
+            popup = ``;
+        if((!modalerData.content) || (modalerData.contentType === 'string') || (modalerData.contentType === undefined)){
+            innerWidth = '300';
             popup = `
                 min-height:100px;
                 display:flex;
                 justify-content:center;
                 align-items:center;
                 padding:30px
-            `;
-        if(modalerData.contentType === 'layout'){
+            `
+        } else {
             innerWidth = _.innerCont.childNodes[0].offsetWidth ;
             if(innerWidth > (screen.availWidth - 20)) innerWidth = (screen.availWidth - 20);
-            popup = '';
         }
         let top = '100px',
             right = 'auto',
             left = 'auto';
-        if((modalerData.coordinates) && (modalerData.coordinates.top)) top = modalerData.coordinates.top;
-        if((modalerData.coordinates) && (modalerData.coordinates.right)) right = modalerData.coordinates.right;
-        if((modalerData.coordinates) && (modalerData.coordinates.left)) left = modalerData.coordinates.left;
+        if(modalerData.coordinates){
+            if(modalerData.coordinates.top) top = modalerData.coordinates.top;
+            if(modalerData.coordinates.right) right = modalerData.coordinates.right;
+            if(modalerData.coordinates.left) left = modalerData.coordinates.left;
+        }
         _.contStyle.textContent = `
             core-modaler {
                 width:100%;
@@ -101,6 +103,7 @@ class Modaler {
             core-modaler-inner {
                 width:${innerWidth}px;
                 overflow:auto;
+                max-height: calc(100vh - ${top} - 100px);
                 display: block;
                 background-color:#fff;
                 margin-top:${top};
@@ -109,6 +112,9 @@ class Modaler {
                 ${popup};
             }
         `;
+    }
+    modalerCloseStyles(modalerData){
+        const _ = this;
         if(modalerData.closeBtn !== false) {
             let btnWidth = 25,
                 btnHeight = 25;
@@ -116,10 +122,9 @@ class Modaler {
                 btnWidth = _.modalerCloseBtnClone.offsetWidth;
                 btnHeight = _.modalerCloseBtnClone.offsetHeight;
             }
-            let btnX = _.innerCont.getBoundingClientRect().x + parseInt(innerWidth) - (btnWidth / 2),
+            let btnX = _.innerCont.getBoundingClientRect().x + _.innerCont.offsetWidth - (btnWidth / 2),
                 btnY = _.innerCont.getBoundingClientRect().y - (btnHeight / 2);
-            console.log(_.innerCont.getBoundingClientRect(),innerWidth,btnWidth );
-            if(innerWidth === (screen.availWidth - 20)){
+            if(_.innerCont.offsetWidth === (screen.availWidth - 20)){
                 btnX = screen.availWidth - btnWidth;
             }
             let closeCont = `core-modaler-close {
@@ -189,12 +194,9 @@ class Modaler {
             _.innerCont.textContent = modalerData;
             return;
         }
-        if((modalerData.contentType === 'string') || (modalerData.contentType === undefined)){
-            _.innerCont.textContent = modalerData.content;
-        }
-        else if((modalerData.contentType === 'layout')){
+        if((modalerData.contentType === 'layout')){
             _.innerCont.innerHTML = modalerData.content;
-        } else {
+        } else if((modalerData.contentType === 'class') || (modalerData.contentType === 'object')) {
             let clone;
             if(modalerData.contentType === 'class'){
                 clone = document.querySelector(modalerData.content).cloneNode(true);
@@ -204,6 +206,8 @@ class Modaler {
             }
             clone.style.display = 'block';
             _.innerCont.append(clone);
+        } else {
+            _.innerCont.textContent = modalerData.content;
         }
     }
     //Закрывает модальное окно и применяет анимацию закрытия
@@ -225,6 +229,7 @@ class Modaler {
             _.showModal(modalerData);
             _.createButtonTpl(modalerData);
             _.modalerStyles(modalerData);
+            _.modalerCloseStyles(modalerData);
             _.modalAnimationStart(modalerData);
         } else {
             console.log('modalerData не передан')
